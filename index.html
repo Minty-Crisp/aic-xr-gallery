@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Art Institute of Chicago XR Gallery by Minty Crisp</title>
+<!-- A-Frame official release 1.4.1 -->
+<script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
+<!-- MVP.css -->
+<link rel="stylesheet" href="./assets/css/mvp.css">
+<!-- CSS -->
+<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<!-- A-Frame UX Library Engine v0.1 w/ Gallery Support -->
+<script src="./auxl-v01.js"></script>
+<!-- Zesty
+<script src="https://ipfs.io/ipns/lib.zesty.market/zesty-web-sdk.js"></script> -->
+<body>
+<!--
+Warning: This website contains images that may contain nudity. Viewer discretion is advised. If you are not of legal age or do not wish to view such content, please navigate away from this website.
+-->
+<!-- Sticky -->
+<div id="stickyBar" class="sticky flexRow">
+	<span class="flexRow flexStart">
+		<img id="stickyIcon" src="./assets/img/favicon/logo.png" alt="site-icon" / class="flexCol">
+		<span id="stickyTitle" class="flexCol"><h3>Art Institute of Chicago XR Gallery by Minty Crisp</h3></span>
+	</span>
+	<span class="flexRow">
+		<button id="stickyMenu" class="flexCol">Menu</button>
+	</span>
+</div>
+<!-- Begin Experience -->
+<div id="beginDiv">
+<li><button class="menu" id="startButton">Start</button></li>
+<li><button id="menuModeButton" class="flexCol">Mode : Desktop</button></li>
+<li><button id="vrHandButton" class="flexCol">Hand : Right</button></li>
+<li><button id="audioButton" class="flexCol">Sound : Disabled</button></li>
+<li><button id="viewInfo" class="flexCol">View Instructions</button></li>
+</div>
+<!-- Experience Instructions -->
+<div id="expInfo">
+<li><button id="infoClose" class="flexCol">Close</button></li>
+Browse through the entire Art Institute of Chicago catalog of images in a casual viewing experiences. 8 frames surrounding the center displaying various images provided by AIC's public API. Control the image frames with a handful of buttons to jump to a random page, go back a page, go back a few images, view info, play the slideshow, go forward a few images, go to the next page and switch between 2 frame sizings. A random page number is loaded at the start from the 13209 available, so lots and lots of images to enjoy.
+</div>
+<main>
+<a-scene
+auxl
+vr-mode-ui="enabled: false;"
+device-orientation-permission-ui="enabled: false"
+renderer="antialias: true; colorManagement: true; sortObjects: true"
+>
+<!-- - - - - - - - - - - Assets - - - - - - - - - - -->
+<a-assets timeout="3000">
+
+<!-- - - - - - - - - - - Import - - - - - - - - - - -->
+
+<!-- - - - - - - - - - - Timeline - - - - - - - - - - -->
+
+<!-- - - - - - - - - - - Mixins - - - - - - - - - - -->
+</a-assets>
+<!-- - - - - - - - - - - Zesty - - - - - - - - - - -->
+<!--
+<zesty-web space="0" width="100px" beacon="true"></zesty-web> -->
+<!-- - - - - - - - - - - Player Controls - - - - - - - - - - -->
+<a-entity id="playerRig" position="0 0 0.5"
+><a-camera id="camera"
+position="0 1.6 0"
+look-controls="enabled: true; reverseMouseDrag: false; reverseTouchDrag: false; touchEnabled: true; mouseEnabled: true; pointerLockEnabled: false; magicWindowTrackingEnabled: true"
+wasd-controls="enabled: false;"
+></a-camera></a-entity>
+<!-- - - - - - - - - - - Lights - - - - - - - - - - -->
+<!-- Directional -->
+<a-entity id="directionalLight"
+light="type: directional; intensity: 0.1; castShadow: false" position="-1 0.65 -1"
+animation__sunriselight="property: light.intensity; from: 0.1; to: 0.5; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunrise"
+animation__sunrise="property: position; from: -1 0.65 -1; to: -0.75 0.65 -0.75; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunrise"
+animation__day="property: position; from: -0.75 0.65 -0.75; to: 0.75 0.65 0.75; dur: 150000; delay: 30000; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunrise"
+animation__sunsetlight="property: light.intensity; from: 0.5; to: 0.1; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunset"
+animation__sunset="property: position; from: 0.75 0.65 0.75; to: 1 0.65 1; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunset"
+animation__night="property: position; from: 1 0.65 1; to: -1 0.65 -1; dur: 150000; delay: 30000; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunset"
+
+animation__testing="property: position; from: -1 0.65 -1; to: 1 0.65 1; dur: 10000; delay: 0; loop: true; dir: alternate; easing: linear; elasticity: 400; autoplay: false; enabled: false;"
+></a-entity>
+<!-- Ambient -->
+<a-entity id="ambientLight"
+light="type: ambient; color: #716a9a; intensity: 1"
+animation__sunrise="property: light.intensity; from: 1; to: 0.5; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunrise"
+animation__sunset="property: light.intensity; from: 0.5; to: 1; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunset"
+></a-entity>
+</a-scene>
+</main>
+</body>
+</html>
