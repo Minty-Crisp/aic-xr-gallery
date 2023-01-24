@@ -220,7 +220,7 @@ function enableMobileControls(){
 	sceneEl.addEventListener('deviceorientationpermissionrejected', function(){
 		aThis.mobilePermissionGranted = false;
 	});
-	playerRig.setAttribute('movement-controls',{enabled: 'true', controls: 'touch', speed: 0.1, fly: false, constrainToNavMesh: false, camera: '#camera'});
+	playerRig.setAttribute('movement-controls',{enabled: 'false', controls: 'touch', speed: 0.1, fly: false, constrainToNavMesh: false, camera: '#camera'});
 	//Set mouseController to invisible
 	mouseController.setAttribute('visible',true);
 	//Set mouseController raycaster to false
