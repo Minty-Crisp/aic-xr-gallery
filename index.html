@@ -71,21 +71,10 @@ wasd-controls="enabled: false;"
 <!-- - - - - - - - - - - Lights - - - - - - - - - - -->
 <!-- Directional -->
 <a-entity id="directionalLight"
-light="type: directional; intensity: 0.1; castShadow: false" position="-1 0.65 -1"
-animation__sunriselight="property: light.intensity; from: 0.1; to: 0.5; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunrise"
-animation__sunrise="property: position; from: -1 0.65 -1; to: -0.75 0.65 -0.75; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunrise"
-animation__day="property: position; from: -0.75 0.65 -0.75; to: 0.75 0.65 0.75; dur: 150000; delay: 30000; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunrise"
-animation__sunsetlight="property: light.intensity; from: 0.5; to: 0.1; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunset"
-animation__sunset="property: position; from: 0.75 0.65 0.75; to: 1 0.65 1; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunset"
-animation__night="property: position; from: 1 0.65 1; to: -1 0.65 -1; dur: 150000; delay: 30000; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunset"
-
-animation__testing="property: position; from: -1 0.65 -1; to: 1 0.65 1; dur: 10000; delay: 0; loop: true; dir: alternate; easing: linear; elasticity: 400; autoplay: false; enabled: false;"
+light="type: directional; intensity: 0.1; castShadow: false" position="-1 1 -1"
 ></a-entity>
-<!-- Ambient -->
 <a-entity id="ambientLight"
-light="type: ambient; color: #716a9a; intensity: 1"
-animation__sunrise="property: light.intensity; from: 1; to: 0.5; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunrise"
-animation__sunset="property: light.intensity; from: 0.5; to: 1; dur: 30000; delay: 0; loop: false; dir: normal; easing: linear; elasticity: 400; autoplay: false; enabled: true; startEvents: sunset"
+light="type: ambient; color: #99154E; intensity: 0.7"
 ></a-entity>
 </a-scene>
 </main>

@@ -110,6 +110,10 @@ this.events = {};
 //this.carousels = {};
 
 //
+//Environmental Settings
+this.timeInDay = 360000;
+
+//
 //HTML Menu
 function toggleMenu(){
 	if(aThis.menuOpen){
@@ -131,10 +135,15 @@ stickyMenu.addEventListener('click', toggleMenu);
 //Start Experience
 function startExp(){
 	if(aThis.expStarted){}else{
-		startButton.innerHTML = 'Resume'
-		aThis.zone0.StartScene();
-		updateControls();
-		aThis.expStarted = true;
+		let timeoutSpawn = setTimeout(function () {
+			startButton.innerHTML = 'Resume'
+			aThis.zone0.StartScene();
+			updateControls();
+			aThis.expStarted = true;
+			dayNight();
+			clearTimeout(timeoutSpawn);
+		}, 425);
+		playerSpawnAnim();
 	}
 	toggleMenu();
 }
@@ -591,7 +600,7 @@ const Core = (data) => {
 
 		if(core.entity === 'preAdded'){
 			core.el = document.getElementById(core.id);
-			return core.el;
+			//return core.el;
 		} else if(core.entity){
 			core.el = document.createElement(core.entity);
 		} else {
@@ -1048,6 +1057,10 @@ const Layer = (id, all) => {
 		return layer.all.parent.core.GetEl();
 	}
 
+	const EmitEventParent = (eventName) => {
+		all.parent.core.EmitEvent(eventName);
+	}
+
 	const ChangeParent = (property, value) => {
 		all.parent.core.ChangeSelf(property, value);
 	}
@@ -1082,14 +1095,14 @@ const Layer = (id, all) => {
 
 	}
 
-	return {layer, AddAllToScene, RemoveAllFromScene, GetParentEl, ChangeParent, ChangeAll, AnimateParent, AnimateAll, GetChild};
+	return {layer, AddAllToScene, RemoveAllFromScene, GetParentEl, EmitEventParent, ChangeParent, ChangeAll, AnimateParent, AnimateAll, GetChild};
 }
 
 //
 //Player
 const Player = (layer) => {
 
-	layer.transition = 'blink';
+	layer.transition = 'fade';
 	//instant
 	//fade
 	//sphere
@@ -1151,7 +1164,37 @@ const Player = (layer) => {
 
 	return {layer, SetFlag, GetFlag, TempDisableClick}
 }
-
+//Spawn Function
+function playerSpawnAnim(){
+	if(aThis.player.layer.transition === 'blink'){
+		aThis.player.TempDisableClick();
+		aThis.blink1Screen.ChangeSelf({property: 'visible', value: 'true'});
+		aThis.blink2Screen.ChangeSelf({property: 'visible', value: 'true'});
+		aThis.blink1Screen.EmitEvent('blink');
+		aThis.blink2Screen.EmitEvent('blink');
+		timeout2 = setTimeout(function () {
+			aThis.blink1Screen.ChangeSelf({property: 'visible', value: 'false'});
+			aThis.blink2Screen.ChangeSelf({property: 'visible', value: 'false'});
+			clearTimeout(timeout2);
+		}, 1200);
+	} else if (aThis.player.layer.transition === 'fade'){
+		aThis.player.TempDisableClick();
+		aThis.fadeScreen.ChangeSelf({property: 'visible', value: 'true'});
+		aThis.fadeScreen.EmitEvent('fade');
+		timeout2 = setTimeout(function () {
+			aThis.fadeScreen.ChangeSelf({property: 'visible', value: 'false'});
+			clearTimeout(timeout2);
+		}, 1200);
+	} else if (aThis.player.layer.transition === 'sphere'){
+		aThis.player.TempDisableClick();
+		aThis.sphereScreen.ChangeSelf({property: 'visible', value: 'true'});
+		aThis.sphereScreen.EmitEvent('sphere');
+		timeout2 = setTimeout(function () {
+			aThis.sphereScreen.ChangeSelf({property: 'visible', value: 'false'});
+			clearTimeout(timeout2);
+		}, 1200);
+	} else if (aThis.player.layer.transition === 'instant'){}
+}
 //
 //Menu
 const Menu = (menuData) => {
@@ -2743,7 +2786,6 @@ const ObjsGenRing = (data) => {
 	//gen.innerRingRadius
 	//gen.sameTypeRadius
 	//gen.otherTypeRadius
-	//gen.yPos
 	//gen.ranYPos
 	//gen.yPosFlex
 	//gen.ranScaleX
@@ -2795,51 +2837,43 @@ const ObjsGenRing = (data) => {
 			}
 			//Texture
 			if(gen.ranTexture){
-				//objData.material.src = patterns[Math.floor(Math.random()*patterns.length)];
+				objData.material.src = patterns[Math.floor(Math.random()*patterns.length)];
 			}
 			//Rotation
+			rotX = objData.rotation.x;
+			rotY = objData.rotation.y;
+			rotZ = objData.rotation.z;
 			if(gen.ranRotX){
-				rotX = Math.random() * 360;
-			} else {
-				rotX = objData.rotation.x;
+				rotX += Math.random() * 360;
 			}
 			if(gen.ranRotY){
-				rotY = Math.random() * 360;
-			} else {
-				rotY = objData.rotation.y;
+				rotY += Math.random() * 360;
 			}
 			if(gen.ranRotZ){
-				rotZ = Math.random() * 360;
-			} else {
-				rotZ = objData.rotation.z;
+				rotZ += Math.random() * 360;
 			}
 			objData.rotation = new THREE.Vector3(rotX, rotY, rotZ);
 
 			//Scale
+			scaleX = gen.objData.scale.x;
+			scaleY = gen.objData.scale.y;
+			scaleZ = gen.objData.scale.z;
 			if(gen.ranScaleX){
-				scaleX = Math.random() * gen.scaleFlex + 1;
-			} else {
-				scaleX = gen.objData.scale.x;
+				scaleX += Math.random() * gen.scaleFlex;
 			}
 			if(gen.ranScaleY){
-				scaleY = Math.random() * gen.scaleFlex + 1;
-			} else {
-				scaleY = gen.objData.scale.y;
+				scaleY += Math.random() * gen.scaleFlex;
 			}
 			if(gen.ranScaleZ){
-				scaleZ = Math.random() * gen.scaleFlex + 1;
-			} else {
-				scaleZ = gen.objData.scale.z;
+				scaleZ += Math.random() * gen.scaleFlex;
 			}
 			objData.scale = new THREE.Vector3(scaleX, scaleY, scaleZ);
 
 			//Scale adjustment needs affect gen.sameTypeRadius
 			//Need to spawn equal amount in each quadrant?
-
+			posY = gen.objData.position.y;
 			if(gen.ranYPos){
-				posY = Math.random() * (gen.yPosFlex - gen.yPos) + gen.yPos;
-			} else {
-				posY = gen.objData.position.y;
+				posY += Math.random() * gen.yPosFlex;
 			}
 
 			//Position
@@ -3258,8 +3292,9 @@ position: new THREE.Vector3(0,0,-0.15),
 rotation: new THREE.Vector3(0,0,0),
 scale: new THREE.Vector3(1,1,1),
 animations: {
-fadein:{property: 'components.material.material.opacity', from: 0, to: 1, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'fade'},
-fadeout:{property: 'components.material.material.opacity', from: 1, to: 0, dur: 400, delay: 600, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'fade'}, 
+fadein:{property: 'components.material.material.opacity', from: 0, to: 1, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'fade'},
+
+fadeout:{property: 'components.material.material.opacity', from: 1, to: 0, dur: 400, delay: 800, loop: 'false', dir: 'normal', easing: 'easeInSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'fade'}, 
 },
 mixins: false,
 classes: ['a-ent','player','clickable'],
@@ -3277,10 +3312,11 @@ position: new THREE.Vector3(0,0,0),
 rotation: new THREE.Vector3(0,0,0),
 scale: new THREE.Vector3(1,1,1),
 animations:{
-spherein1:{property: 'geometry.thetaLength', from: 0, to: 180, dur: 400, delay: 0, loop: 'false', dir: 'alternate', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sphere'},
-spherein2: {property: 'geometry.thetaStart', from: 90, to: 0, dur: 400, delay: 0, loop: 'false', dir: 'alternate', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sphere'},
-sphereout1:{property: 'geometry.thetaLength', from: 180, to: 0, dur: 400, delay: 600, loop: 'false', dir: 'alternate', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sphere'},
-sphereout2: {property: 'geometry.thetaStart', from: 0, to: 90, dur: 400, delay: 600, loop: 'false', dir: 'alternate', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sphere'},
+spherein1:{property: 'geometry.thetaLength', from: 0, to: 180, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sphere'},
+spherein2: {property: 'geometry.thetaStart', from: 90, to: 0, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sphere'},
+
+sphereout1:{property: 'geometry.thetaLength', from: 180, to: 0, dur: 400, delay: 800, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sphere'},
+sphereout2: {property: 'geometry.thetaStart', from: 0, to: 90, dur: 400, delay: 800, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sphere'},
 },
 mixins: false,
 classes: ['a-ent','player'],
@@ -3298,10 +3334,11 @@ position: new THREE.Vector3(0,2.5,-0.15),
 rotation: new THREE.Vector3(0,0,0),
 scale: new THREE.Vector3(1,1,1),
 animations:{
-blinkin:{property: 'object3D.position.y', from: 2.5, to: 1, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
-blinkopacin: {property: 'components.material.material.opacity', from: 0, to: 1, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
-blinkout:{property: 'object3D.position.y', from: 1, to: 2.5, dur: 400, delay: 600, loop: 'false', dir: 'normal', easing: 'easeInSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
-blinkopacout: {property: 'components.material.material.opacity', from: 1, to: 0, dur: 400, delay: 600, loop: 'false', dir: 'normal', easing: 'easeInSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
+blinkin:{property: 'object3D.position.y', from: 2.5, to: 1, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
+blinkopacin: {property: 'components.material.material.opacity', from: 0, to: 1, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
+
+blinkout:{property: 'object3D.position.y', from: 1, to: 2.5, dur: 400, delay: 800, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
+blinkopacout: {property: 'components.material.material.opacity', from: 1, to: 0, dur: 400, delay: 800, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
 },
 mixins: false,
 classes: ['a-ent','player'],
@@ -3319,10 +3356,11 @@ position: new THREE.Vector3(0,-2.5,-0.15),
 rotation: new THREE.Vector3(0,0,0),
 scale: new THREE.Vector3(1,1,1),
 animations:{
-blinkin:{property: 'object3D.position.y', from: -2.5, to: -1, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
-blinkopacin: {property: 'components.material.material.opacity', from: 0, to: 1, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
-blinkout:{property: 'object3D.position.y', from: -1, to: -2.5, dur: 400, delay: 600, loop: 'false', dir: 'normal', easing: 'easeInSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
-blinkopacout: {property: 'components.material.material.opacity', from: 1, to: 0, dur: 400, delay: 600, loop: 'false', dir: 'normal', easing: 'easeInSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
+blinkin:{property: 'object3D.position.y', from: -2.5, to: -1, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
+blinkopacin: {property: 'components.material.material.opacity', from: 0, to: 1, dur: 400, delay: 0, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
+
+blinkout:{property: 'object3D.position.y', from: -1, to: -2.5, dur: 400, delay: 800, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
+blinkopacout: {property: 'components.material.material.opacity', from: 1, to: 0, dur: 400, delay: 800, loop: 'false', dir: 'normal', easing: 'easeInOutSine', elasticity: 400, autoplay: false, enabled: true, startEvents: 'blink'},
 },
 mixins: false,
 classes: ['a-ent','player'],
@@ -3415,7 +3453,7 @@ components: false,
 //
 //Lights
 
-//Directional
+//Directional - Built-in
 this.directionalLightData = {
 data:'directionalLight',
 id:'directionalLight',
@@ -3424,21 +3462,21 @@ sources: false,
 text: false,
 geometry: false,
 material: false,
-position: new THREE.Vector3(0.25,0.65,0.25),
+position: new THREE.Vector3(-1,1,-1),
 rotation: new THREE.Vector3(0,0,0),
 scale: new THREE.Vector3(1,1,1),
 animations: {
-sunrise:{property: 'light.intensity', from: 0.25, to: 0.75, dur: 30000, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
-sunset:{property: 'light.intensity', from: 0.75, to: 0.25, dur: 30000, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunset'},
+daylight:{property: 'light.intensity', from: 0.1, to: 1.25, dur: aThis.timeInDay/4, delay: 0, loop: 'true', dir: 'alternate', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
+daypos:{property: 'position', from: new THREE.Vector3(-1,1,-1), to: new THREE.Vector3(1,1,1), dur: aThis.timeInDay/2, delay: 0, loop: '1', dir: 'alternate', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
 },
 mixins: false,
 classes: ['a-ent'],
 components: {
-light: {type: 'directional', intensity: 0.25, castShadow: false},
+light: {type: 'directional', intensity: 0.1, castShadow: false},
 },
 };
 
-//Ambient
+//Ambient - Built-in
 this.ambientLightData = {
 data:'ambientLight',
 id:'ambientLight',
@@ -3451,16 +3489,38 @@ position: new THREE.Vector3(0,0,0),
 rotation: new THREE.Vector3(0,0,0),
 scale: new THREE.Vector3(1,1,1),
 animations: {
-sunrise:{property: 'light.intensity', from: 1, to: 0.5, dur: 30000, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
-sunset:{property: 'light.intensity', from: 0.5, to: 1, dur: 30000, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunset'},
+daylight:{property: 'light.intensity', from: 0.7, to: 0.4, dur: aThis.timeInDay/2, delay: 0, loop: 'true', dir: 'alternate', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
+daycolor:{property: 'light.color', from: '#99154E', to: '#fffb96', dur: aThis.timeInDay/4, delay: 0, loop: '1', dir: 'alternate', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
 },
 mixins: false,
 classes: ['a-ent'],
 components: {
-light: {type: 'ambient', intensity: 1, color: '#716a9a'},
+light: {type: 'ambient', intensity: 0.7, color: '#716a9a'},
 },
 };
 
+//Directional 2
+this.directionalLight2Data = {
+data:'directionalLight2',
+id:'directionalLight2',
+sources: false,
+text: false,
+geometry: false,
+material: false,
+position: new THREE.Vector3(1,1,1),
+rotation: new THREE.Vector3(0,0,0),
+scale: new THREE.Vector3(1,1,1),
+animations: {
+nightlight:{property: 'light.intensity', from: 0.3, to: 0.1, dur: aThis.timeInDay/4, delay: 0, loop: 'true', dir: 'alternate', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
+daypos:{property: 'position', from: new THREE.Vector3(1,1,1), to: new THREE.Vector3(-1,1,-1), dur: aThis.timeInDay/2, delay: 0, loop: '1', dir: 'alternate', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
+
+},
+mixins: false,
+classes: ['a-ent'],
+components: {
+light: {type: 'directional', intensity: 0.3, castShadow: false},
+},
+};
 
 //Sun
 this.sunOuterData = {
@@ -3473,7 +3533,7 @@ material: false,
 position: new THREE.Vector3(0,0,0),
 rotation: new THREE.Vector3(-10,45,0),
 scale: new THREE.Vector3(1,1,1),
-animations:{daynight:{property: 'object3D.rotation.x', from: -10, to: 350, dur: 360000, delay: 0, loop: 'true', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: true, enabled: true,},},
+animations:{daynight:{property: 'object3D.rotation.x', from: -5, to: 355, dur: aThis.timeInDay, delay: 0, loop: 'true', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true,startEvents: 'sunrise'},},
 mixins: false,
 classes: ['a-ent'],
 components: false,
@@ -3505,7 +3565,7 @@ material: false,
 position: new THREE.Vector3(0,0,0),
 rotation: new THREE.Vector3(170,45,0),
 scale: new THREE.Vector3(1,1,1),
-animations:{daynight:{property: 'object3D.rotation.x', from: 170, to: 530, dur: 360000, delay: 0, loop: 'true', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: true, enabled: true,},},
+animations:{daynight:{property: 'object3D.rotation.x', from: 175, to: 535, dur: aThis.timeInDay, delay: 0, loop: 'true', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true,startEvents: 'sunrise'},},
 mixins: false,
 classes: ['a-ent'],
 components: false,
@@ -3536,7 +3596,7 @@ geometry: false,
 material: {shader: "standard", color: "#1da21d", opacity: 1, metalness: 0.2, roughness: 0.42, emissive: "#1da21d", emissiveIntensity: 0.42, wireframe: false,},
 position: new THREE.Vector3(0,-1,0),
 rotation: new THREE.Vector3(0,0,0),
-scale: new THREE.Vector3(1,1,1),
+scale: new THREE.Vector3(1,0.75,1),
 animations: false,
 mixins: false,
 classes: ['a-ent'],
@@ -3559,9 +3619,9 @@ yPos: 0,
 ranYPos: false,
 yPosFlex: 0,
 ranScaleX: false,
-ranScaleY: false,
+ranScaleY: true,
 ranScaleZ: false,
-scaleFlex: 1,
+scaleFlex: 0.5,
 ranRotX: false,
 ranRotY: true,
 ranRotZ: false,
@@ -3579,7 +3639,7 @@ id:'nodeFloor',
 sources:false,
 text: false,
 geometry: {primitive: 'sphere', radius: 100, segmentsWidth: 10, segmentsHeight: 10, phiLength: 180},
-material: {shader: "standard", src: pattern49, repeat: '100 100',color: "#298625", opacity: 1, metalness: 0.6, roughness: 0.4, emissive: "#298625", emissiveIntensity: 0.8, side: 'front'},
+material: {shader: "standard", color: "#298625", opacity: 1, metalness: 0.6, roughness: 0.4, emissive: "#298625", emissiveIntensity: 0.2, side: 'front'},
 position: new THREE.Vector3(0,-2,0),
 rotation: new THREE.Vector3(-90,0,0),
 scale: new THREE.Vector3(0.5,0.5,0.02),
@@ -3600,15 +3660,15 @@ entity: 'a-sky',
 sources: false,
 text: false,
 geometry: false,
-material: {shader: 'threeColorGradientShader', topColor: '#372643', middleColor: '#99154E', bottomColor: '#8547ba'},
+material: {shader: 'threeColorGradientShader', topColor: '#613381', middleColor: '#99154E', bottomColor: '#b967ff'},
 position: new THREE.Vector3(0,0,0),
 rotation: new THREE.Vector3(0,0,0),
 scale: new THREE.Vector3(1,1,1),
 animations: {
-sunrisetop:{property: 'material.topColor', from: '#372643', to: '#01cdfe', dur: 30000, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
-sunrisemid:{property: 'material.middleColor', from: '#99154E', to: '#fffb96', dur: 30000, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
-sunsettop:{property: 'material.topColor', from: '#01cdfe', to: '#372643', dur: 30000, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunset'},
-sunsetmid:{property: 'material.middleColor', from: '#fffb96', to: '#99154E', dur: 30000, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunset'},
+sunrisetop:{property: 'material.topColor', from: '#613381', to: '#01cdfe', dur: aThis.timeInDay/6, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'},
+sunrisemid:{property: 'material.middleColor', from: '#99154E', to: '#fffb96', dur: aThis.timeInDay/6, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunrise'}, 
+sunsettop:{property: 'material.topColor', from: '#01cdfe', to: '#613381', dur: aThis.timeInDay/6, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunset'},
+sunsetmid:{property: 'material.middleColor', from: '#fffb96', to: '#99154E', dur: aThis.timeInDay/6, delay: 0, loop: 'false', dir: 'normal', easing: 'linear', elasticity: 400, autoplay: false, enabled: true, startEvents: 'sunset'}, 
 },
 mixins: false,
 classes: ['a-ent'],
@@ -3886,11 +3946,7 @@ sceneText: false,
 },
 zone:{},
 start:{
-skyGrad:{AddToScene:null},
-sunLayer:{AddAllToScene:null},
-moonLayer:{AddAllToScene:null},
-directionalLight:{AddToScene:null},
-ambientLight:{AddToScene:null},
+nodeFloor:{ChangeSelf:{property: 'material', value: {src: pattern49, repeat: '100 100', color: "#298625", emissive: "#298625",},}},
 titleText:{AddToScene:null},
 warningText:{AddToScene:null},
 buttonBackwardLayer:{AddAllToScene:null},
@@ -3902,21 +3958,11 @@ buttonRightSkipLayer:{AddAllToScene:null},
 buttonSettingsLayer:{AddAllToScene:null},
 buttonStopLayer:{AddAllToScene:null},
 artFrameAllLayer:{AddAllToScene:null},
-nodeFloor:{AddToScene: null},
 multiPalmTree:{genCores: null, SpawnAll: null},
 },
 delay:{
-0:{skyGrad:{EmitEvent: 'sunrise',SetFlag:{flag: 'day', value: 'true'},},directionalLight:{EmitEvent: 'sunrise'},ambientLight:{EmitEvent: 'sunrise'},},
 },
 interval:{
-180000: {
-run: {skyGrad:{IfElse: {cond: 'day',
-ifTrue: {
-skyGrad:{EmitEvent: 'sunset',SetFlag:{flag: 'day', value: 'false'},},directionalLight:{EmitEvent: 'sunset'},ambientLight:{EmitEvent: 'sunset'},},
-ifFalse: {
-skyGrad:{EmitEvent: 'sunrise',SetFlag:{flag: 'day', value: 'true'},},directionalLight:{EmitEvent: 'sunrise'},ambientLight:{EmitEvent: 'sunrise'},},
-},},
-}, loop: 'infinite'},
 },
 event:{},
 interaction:{
@@ -4138,8 +4184,8 @@ this.player = Player(this.playerLayer);
 
 //Lights
 this.directionalLight = Core(this.directionalLightData);
+this.directionalLight2 = Core(this.directionalLight2Data);
 this.ambientLight = Core(this.ambientLightData);
-
 //Sun
 this.sunOuter = Core(this.sunOuterData);
 this.sun = Core(this.sunData);
@@ -4148,7 +4194,6 @@ parent: {core: this.sunOuter},
 child0: {core: this.sun},
 }
 this.sunLayer = Layer('sunLayer', this.sunLayerData);
-
 //Moon
 this.moonOuter = Core(this.moonOuterData);
 this.moon = Core(this.moonData);
@@ -4158,15 +4203,15 @@ child0: {core: this.moon},
 }
 this.moonLayer = Layer('moonLayer', this.moonLayerData);
 
+//3Grad Dual Sky
+this.skyGrad = Core(this.skyGradData);
+
 //Node Floor
 this.nodeFloor = Core(this.nodeFloorData);
 
 //Palm Trees
 this.palmTree = Core(this.palmTreeData);
 this.multiPalmTree = ObjsGenRing(this.multiPalmTreeData);
-
-//3Grad Dual Sky
-this.skyGrad = Core(this.skyGradData);
 
 //Display Text
 this.titleText = Core(this.titleTextData);
@@ -4558,6 +4603,45 @@ this.artFrameAllLayer = Layer('artFrameAllLayer',this.artFrameAllLayerData);
 this.zone0Node0 = SceneNode(this.zone0Node0Data);
 //Map Zone 0
 this.zone0 = MapZone(this.zone0Data);
+
+//
+//Environmental Globals
+this.directionalLight.AddToScene(false, false, true);
+this.directionalLight2.AddToScene(false, false, true);
+this.ambientLight.AddToScene(false, false, true);
+this.skyGrad.AddToScene(false, false, true);
+this.sunLayer.AddAllToScene(true);
+this.moonLayer.AddAllToScene(true);
+this.nodeFloor.AddToScene(false, false, true);
+
+//DayNight
+function dayNight(){
+
+	aThis.directionalLight.EmitEvent('sunrise');
+	aThis.directionalLight2.EmitEvent('sunrise');
+	aThis.ambientLight.EmitEvent('sunrise');
+	aThis.sunLayer.EmitEventParent('sunrise');
+	aThis.moonLayer.EmitEventParent('sunrise');
+	aThis.skyGrad.EmitEvent('sunrise');
+
+	aThis.skyGrad.SetFlag({flag:'day', value: true});
+	//SkyGrad Color Anim
+	//Timeout
+	let timeoutDayNight = setTimeout(function () {
+		aThis.skyGrad.SetFlag({flag:'day', value: false});
+		aThis.skyGrad.EmitEvent('sunset');
+		let intervalDayNight = setInterval(function() {
+			if(aThis.skyGrad.GetFlag('day')){
+				aThis.skyGrad.SetFlag({flag:'day', value: false});
+				aThis.skyGrad.EmitEvent('sunset');
+			}else{
+				aThis.skyGrad.SetFlag({flag:'day', value: true});
+				aThis.skyGrad.EmitEvent('sunrise');
+			}
+		//clearInterval(intervalDayNight);
+		}, aThis.timeInDay/2); //Interval
+	}, aThis.timeInDay/2 - aThis.timeInDay/24); //Delay
+}
 
 },//Init
 
