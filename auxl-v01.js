@@ -324,8 +324,28 @@ infoClose.addEventListener('click', toggleInfo);
 //Support
 
 //Color Theory Hex Generator
-function colorsHexGen(color){
-//Could allow importing the main color family to choose from. Like start with a random red and build from there or import a specifc hex and build from there
+//Color Theory Hex Generator
+function colorsHexGen(color, family){
+
+//Colors Generated :
+//Base
+//Complementary
+//Split-complementary
+//Triadic
+//Tetradic
+//Analagous
+//Monochrome
+
+let r;
+let r0;
+let g;
+let g0;
+let b;
+let b0;
+let base;
+let baseRGB;
+let familyCheck = false;
+const colorFamily =['red','orange','yellow','lime','blue','cyan','magenta','maroon','olive','green','purple','teal','navy','silver','grey','black','white'];
 
 //Support Functions
 function HSLToRGB(h,s,l) {
@@ -392,39 +412,100 @@ function hexToRGB(h) {
 	//return "rgb("+ +r + "," + +g + "," + +b + ")";
 	return {r,g,b};
 }
+function randomColorFamily(){
+	return colorFamily[Math.floor(Math.random()*(colorFamily.length-2))];
+	//Ignore last 2 Black/White
+}
 
-let r;
-let r0;
-let g;
-let g0;
-let b;
-let b0;
-let base;
-let baseRGB;
-
-//If color doesn't exist then create a randomized one
+//Check if color input is useable
 if(color){
-//color is Hex
-base = color;
-baseRGB = hexToRGB(base);
+	if(color[0] === '#' && color.length === 4 || color[0] === '#' && color.length === 7){} else {
+		color = false;
+	}
+}
+//Check if family input is useable
+if(family){
+	for(let each in colorFamily){
+		if(family === colorFamily[each]){
+			familyCheck = true;
+			break;
+		}
+	}
+	if(familyCheck){} else {
+		family = randomColorFamily();
+	}
+}
 
-//convert Hex to RGB
-r = baseRGB.r;
-r0 = r/255;
-g = baseRGB.g;
-g0 = g/255;
-b = baseRGB.b;
-b0 = b/255;
+//Generate Color Values
+if(color){
+	//color is Hex
+	base = color;
+	baseRGB = hexToRGB(base);
 
+	//convert Hex to RGB
+	r = baseRGB.r;
+	r0 = r/255;
+	g = baseRGB.g;
+	g0 = g/255;
+	b = baseRGB.b;
+	b0 = b/255;
 } else {
-
-r = Math.floor(Math.random()*255);
-r0 = r/255;
-g = Math.floor(Math.random()*255);
-g0 = g/255;
-b = Math.floor(Math.random()*255);
-b0 = b/255;
-base = RGBToHex(r,g,b);
+	if(!family){
+		family = randomColorFamily();
+	}
+	if(family === 'red'){
+		r = Math.floor(Math.random()*55)+200;
+		g = b = 0;
+	} else if(family === 'orange'){
+		r = Math.floor(Math.random()*105)+150;
+		g = Math.floor(r*0.65);
+		b = 0;
+	} else if(family === 'yellow'){
+		r = g = Math.floor(Math.random()*55)+200;
+		b = 0;
+	} else if(family === 'lime'){
+		g = Math.floor(Math.random()*55)+200;
+		r = b = 0;
+	} else if(family === 'blue'){
+		b = Math.floor(Math.random()*55)+200;
+		r = g = 0;
+	} else if(family === 'cyan'){
+		g = b = Math.floor(Math.random()*55)+200;
+		r = 0;
+	} else if(family === 'magenta'){
+		r = b = Math.floor(Math.random()*55)+200;
+		g = 0;
+	} else if(family === 'maroon'){
+		r = Math.floor(Math.random()*28)+100;
+		b = g = 0;
+	} else if(family === 'olive'){
+		r = g = Math.floor(Math.random()*28)+100;
+		b = 0;
+	} else if(family === 'green'){
+		g = Math.floor(Math.random()*28)+100;
+		r = b = 0;
+	} else if(family === 'purple'){
+		r = b = Math.floor(Math.random()*28)+100;
+		g = 0;
+	} else if(family === 'teal'){
+		g = b = Math.floor(Math.random()*28)+100;
+		r = 0;
+	} else if(family === 'navy'){
+		b = Math.floor(Math.random()*28)+100;
+		r = g = 0;
+	} else if(family === 'black'){
+		r = g = b = Math.floor(Math.random()*42);
+	} else if(family === 'white'){
+		r = g = b = Math.floor(Math.random()*35)+220;
+	} else if(family === 'silver'){
+		r = g = b = Math.floor(Math.random()*42)+170;
+	} else if(family === 'grey'){
+		r = g = b = Math.floor(Math.random()*28)+100;
+	}
+	r0 = r/255;
+	g0 = g/255;
+	b0 = b/255;
+	base = RGBToHex(r,g,b);
 }
 
 //Convert RGB to HSL for Color Theory support
@@ -533,17 +614,6 @@ let dark = RGBToHex(r*(1-spread),g*(1-spread),b*(1-spread));
 //green_dark = green_primary * (1 - scaling_factor)
 //blue_dark = blue_primary * (1 - scaling_factor)
 
-
-
-//Colors :
-//Base
-//Complementary
-//Split-complementary
-//Triadic
-//Tetradic
-//Analagous
-//Monochrome
-
 return {base, light, dark, compl, splitCompl, triadic, tetradic, analag};
 
 }
@@ -562,6 +632,7 @@ console.log(newColor1.tetradic[2]);
 console.log(newColor1.analag[0]);
 console.log(newColor1.analag[1]);
 console.log(newColor1.analag[2]);
+//Color Families : red, orange, yellow, lime, blue, cyan, magenta, maroon, olive, green, purple, teal, navy, silver, gray, black, white
 */
 
 //Entity Core
